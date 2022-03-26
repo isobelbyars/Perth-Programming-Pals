@@ -57,10 +57,10 @@ def a_star_search(data):
 
        
 
-        print("unexplored: ", unexplored)
+        #!print("unexplored: ", unexplored)
         unexplored = sorted(unexplored, key=itemgetter(3)) # sort by the f_value
         current = unexplored.pop(0) # [[4, 2], [0, 0], 0, 6] 
-        print("current best: ", current)
+        #!print("current best: ", current)
         #*if this is our destination node then return
         if current[0] == goal:
             success = True
@@ -75,7 +75,7 @@ def a_star_search(data):
         x_delta=0
 
         for k in range(6): # at most 6 neighboring unexplored tiles
-            print("k: ", k)
+            #!print("k: ", k)
             # loops clockwise around the current coord. 
             # linear transformation to change coordinates to explore the next neighbour
             temp = y_delta + x_delta
@@ -86,15 +86,15 @@ def a_star_search(data):
             exp_coord_list = [item[0] for item in explored] # a list of coords of tiles explored
             unexp_coord_list = [item[0] for item in unexplored]
 
-            print('explored :', explored)
-            print('neighbour_coord: ', neighbour_coord)
+            #!print('explored :', explored)
+            #!print('neighbour_coord: ', neighbour_coord)
             #Do stuff
             if neighbour_coord[0] > y_max or neighbour_coord[1] > x_max or neighbour_coord[0]<0 or neighbour_coord[1]<0:
                 continue
                 # out of bound of the grid space
             
             elif neighbour_coord in exp_coord_list or tuple(neighbour_coord) in list(board_dict.keys()):
-                print('here i have noticed a block or existing explored ')
+                #!print('here i have noticed a block or existing explored ')
                 continue
                 # tile has been explored OR tile is an obstacle
             
@@ -127,15 +127,18 @@ def a_star_search(data):
                 
 
         if not unexplored: # all nodes have been explored and no possible path was found 
-            return False
+            print('if not explored')
+            success = False
+            break
 
 
+    print('success or not', success)
     if success:
         print_result(explored, current, start)
         
 
     else:
-        print(0)
+        print('0')
 
     return 
 
