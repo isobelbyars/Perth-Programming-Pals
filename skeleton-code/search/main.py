@@ -17,10 +17,8 @@ from search.util import create_board_dict, print_board, print_coordinate
 
 
 def a_star_search(data):
-    #TODO
-    # function needs to return the path cost
-    # function needs to retunr the grid sequence [for-looped print statement]
-    # 0 if no solution exists
+    # This is the primary a* search algorithm 
+    # Upon identifying the goal state, it calls print_result(...) to print the results
 
     # Board Parameters
     n = data.get('n')
@@ -49,17 +47,20 @@ def a_star_search(data):
     x_max = n-1
     y_max = n-1
 
-    success = False
-    
+    success = False # Boolean flag denoting if the goal state was found
 
-
-    test_count=0
+    test_counter=0
     while unexplored: # while there are unexplored nodes
-   
+        test_counter+=1
+        #if test_counter ==8:
+           #break
 
+       
+
+        print("unexplored: ", unexplored)
         unexplored = sorted(unexplored, key=itemgetter(3)) # sort by the f_value
         current = unexplored.pop(0) # [[4, 2], [0, 0], 0, 6] 
-
+        print("current best: ", current)
         #*if this is our destination node then return
         if current[0] == goal:
             success = True
@@ -74,42 +75,47 @@ def a_star_search(data):
         x_delta=0
 
         for k in range(6): # at most 6 neighboring unexplored tiles
+            print("k: ", k)
             # loops clockwise around the current coord. 
-            # linear transformation to change coordinates
+            # linear transformation to change coordinates to explore the next neighbour
             temp = y_delta + x_delta
             y_delta = -1*x_delta
             x_delta = temp
 
             neighbour_coord = [current[0][0]+y_delta, current[0][1]+x_delta] # neighboring tile
-    
-            #do stuff
+            exp_coord_list = [item[0] for item in explored] # a list of coords of tiles explored
+            unexp_coord_list = [item[0] for item in unexplored]
+
+            print('explored :', explored)
+            print('neighbour_coord: ', neighbour_coord)
+            #Do stuff
             if neighbour_coord[0] > y_max or neighbour_coord[1] > x_max or neighbour_coord[0]<0 or neighbour_coord[1]<0:
                 continue
-                # out of bounds of the grid space
+                # out of bound of the grid space
             
-            elif neighbour_coord in explored or tuple(neighbour_coord) in list(board_dict.keys()):
+            elif neighbour_coord in exp_coord_list or tuple(neighbour_coord) in list(board_dict.keys()):
+                print('here i have noticed a block or existing explored ')
                 continue
                 # tile has been explored OR tile is an obstacle
             
             
-            else: #add it to a list
-                exp_coord_list = [item[0] for item in explored] # a list of coords of tiles explored
-                unexp_coord_list = [item[0] for item in unexplored]
-                #Explored List
+            # Consider alternative paths evaluating discovered path costs
+            else: 
+                # Explored List
                 if neighbour_coord in exp_coord_list:
                     n_idx = exp_coord_list.index(neighbour_coord) # return the idx of the neighbour coord
                     if explored[n_idx][2]+1 < current[2]: # compare a explored neighbours g score +1  and current node g value to see if going through the explored neighbour is a shorter path
                         current[2] = explored[n_idx][2]+1 # shorter actual path
                         current[1] = neighbour_coord # change the parent 
-                #Unexplored List
+                # Unexplored List
                 elif neighbour_coord in unexp_coord_list:
                     n_idx = unexp_coord_list.index(neighbour_coord) # return the idx of the neighbour coord
                     if unexplored[n_idx][2] > current[2]+1: # compare an unexplored neighbour's g score with the cost of reaching there through current node to see if it is the best established path so far
                         unexplored[n_idx][2] = current[2]+1 # update the g score
                         unexplored[n_idx][1] = current[0] # update the parent of that neighbour to the current node
 
-                #Else newly discovered neighbour
-                #Set the g value     the f value    parent to current
+                # Newly discovered neighbour
+                # Set the g value     the f value    parent to current
                 neighbour_node=[]
                 g_cost = current[2]+1
                 f_cost = g_cost + heuristic(neighbour_coord, goal)  
@@ -141,7 +147,6 @@ def print_result(explored, current, start):
 
     exp_coord_list = [item[0] for item in explored] # a list of coords of tiles explored
 
-    
     while current[0] != start: # backtracking from goal to start
         path.append(tuple(current[0]))
         p_idx = exp_coord_list.index(current[1]) # retrive the parent index
@@ -161,8 +166,7 @@ def print_result(explored, current, start):
 
 
 def heuristic(current, goal):
-    #TODO comment on type, i.e. manhatten
-    # This function returns the direct distance from a particular cell to the goal cell
+    # This function returns a variation of the manhatten distance from a particular cell to the goal cell
     # y_1: represents the vertical coordinate of the current tile
     # x_1: " " horizontal coordinate " "
     # y_goal: represents the vertical coordinate of the goal tile
@@ -193,16 +197,10 @@ def main():
         print("usage: python3 -m search path/to/input.json", file=sys.stderr)
         sys.exit(1)
    
-    board_dict=create_board_dict(data)
-
-
-  
     a_star_search(data)
+    n = data.get('n')
+    board_dict = create_board_dict(data)
+    print_board(n,board_dict)
 
-    print_board(data['n'],board_dict)
-    # TODO: DONE
-    # Find and print a solution to the board configuration described
-    # by `data`. 
-    # Why not start by trying to print this configuration out using the
-    # `print_board` helper function? (See the `util.py` source code for
-    # usage information).
+    
+    
