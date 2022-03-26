@@ -13,7 +13,6 @@ def create_board_dict(board_json):
     board_dict = {}
     board_idx = board_json.get('board')
     for x in board_idx:
-        print(tuple(x[1:]))
         board_dict.update({tuple(x[1:]) : x[0]})
 
     return board_dict
