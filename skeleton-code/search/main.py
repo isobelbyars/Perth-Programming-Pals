@@ -26,8 +26,6 @@ def a_star_search(data):
     start = data.get('start')
     goal = data.get('goal')
 
-    #!REMOVE
-    #print('n',n, '\nbd ', board_dict, '\ns', start, '\ng', goal)
     g_cost = 0 # actual path cost to current tile
     h_cost = 0 # est. path cost to goal tile from current tile
     f_cost = 0 # g_cost + h_cost
@@ -47,35 +45,25 @@ def a_star_search(data):
     x_max = n-1
     y_max = n-1
 
-    success = False # Boolean flag denoting if the goal state was found
+    # Boolean flag denoting if the goal state was found
+    success = False 
 
-    test_counter=0
     while unexplored: # while there are unexplored nodes
-        test_counter+=1
-        #if test_counter ==8:
-           #break
-
-       
-
-        #!print("unexplored: ", unexplored)
         unexplored = sorted(unexplored, key=itemgetter(3)) # sort by the f_value
         current = unexplored.pop(0) # [[4, 2], [0, 0], 0, 6] 
-        #!print("current best: ", current)
+
         #*if this is our destination node then return
         if current[0] == goal:
             success = True
             break
 
-
-        #put the current tile in the exlplored list
+        # put the current tile in the exlplored list
         explored.append(current) # just add the grid coordinates 
         
-        #look at all neighboring unexplored cells 
+        # look at all neighboring unexplored cells 
         y_delta=1
         x_delta=0
-
         for k in range(6): # at most 6 neighboring unexplored tiles
-            #!print("k: ", k)
             # loops clockwise around the current coord. 
             # linear transformation to change coordinates to explore the next neighbour
             temp = y_delta + x_delta
@@ -86,15 +74,12 @@ def a_star_search(data):
             exp_coord_list = [item[0] for item in explored] # a list of coords of tiles explored
             unexp_coord_list = [item[0] for item in unexplored]
 
-            #!print('explored :', explored)
-            #!print('neighbour_coord: ', neighbour_coord)
             #Do stuff
             if neighbour_coord[0] > y_max or neighbour_coord[1] > x_max or neighbour_coord[0]<0 or neighbour_coord[1]<0:
                 continue
                 # out of bound of the grid space
             
             elif neighbour_coord in exp_coord_list or tuple(neighbour_coord) in list(board_dict.keys()):
-                #!print('here i have noticed a block or existing explored ')
                 continue
                 # tile has been explored OR tile is an obstacle
             
@@ -107,15 +92,22 @@ def a_star_search(data):
                     if explored[n_idx][2]+1 < current[2]: # compare a explored neighbours g score +1  and current node g value to see if going through the explored neighbour is a shorter path
                         current[2] = explored[n_idx][2]+1 # shorter actual path
                         current[1] = neighbour_coord # change the parent 
+                    
+                    else:
+                        # No need to re-explore - cost is the same or worse
+                        continue
                 # Unexplored List
                 elif neighbour_coord in unexp_coord_list:
                     n_idx = unexp_coord_list.index(neighbour_coord) # return the idx of the neighbour coord
                     if unexplored[n_idx][2] > current[2]+1: # compare an unexplored neighbour's g score with the cost of reaching there through current node to see if it is the best established path so far
                         unexplored[n_idx][2] = current[2]+1 # update the g score
                         unexplored[n_idx][1] = current[0] # update the parent of that neighbour to the current node
-
+                    else:
+                        # No need to update - cost is the same or worse
+                        continue
+            
                 # Newly discovered neighbour
-                # Set the g value     the f value    parent to current
+                # Set the g value the f value parent to current
                 neighbour_node=[]
                 g_cost = current[2]+1
                 f_cost = g_cost + heuristic(neighbour_coord, goal)  
@@ -127,12 +119,10 @@ def a_star_search(data):
                 
 
         if not unexplored: # all nodes have been explored and no possible path was found 
-            print('if not explored')
             success = False
             break
 
 
-    print('success or not', success)
     if success:
         print_result(explored, current, start)
         
@@ -203,6 +193,8 @@ def main():
     a_star_search(data)
     n = data.get('n')
     board_dict = create_board_dict(data)
+    
+    #!Remove
     print_board(n,board_dict)
 
     
