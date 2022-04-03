@@ -194,8 +194,4 @@ def main():
     n = data.get('n')
     board_dict = create_board_dict(data)
     
-    #!Remove
-    print_board(n,board_dict)
-
-    
     
