@@ -191,7 +191,6 @@ def main():
         sys.exit(1)
    
     a_star_search(data)
-    n = data.get('n')
-    board_dict = create_board_dict(data)
+   
     
     
